@@ -2,439 +2,157 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    
-    <!-- PWA Meta Tags -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="福岡旅遊">
-    <meta name="theme-color" content="#FFFAF0">
-    <title>Fukuoka 2026 - Independent Edition</title>
-    
-    <!-- Tailwind CSS CDN -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>福岡旅遊 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
-        
-        body { 
-            font-family: 'Inter', "PingFang TC", "Microsoft JhengHei", sans-serif; 
-            background-color: #FFFAF0; 
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .glass {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .tab-active {
-            background-color: #bbdfff !important;
-            color: #334155 !important;
-            box-shadow: 0 4px 12px rgba(187, 223, 255, 0.5);
-        }
-
-        .hidden { display: none; }
-
-        /* 動畫 */
-        @keyframes slideUp {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
-        }
-        .animate-slide-up { animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-
-        .no-scrollbar::-webkit-scrollbar { display: none; }
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #FFFAF0; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .active-tab { background-color: #f1c40f; color: white; border-radius: 9999px; }
+        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); }
     </style>
 </head>
-<body class="min-h-screen pb-32">
+<body class="pb-24">
 
-    <!-- 頁面內容容器 -->
-    <div id="app">
-        
-        <!-- 1. 行程頁面 (Itinerary) -->
-        <section id="page-itinerary" class="page-content">
-            <div class="h-52 w-full relative">
-                <img src="https://www.wendyjourney.com/wp-content/uploads/2025/05/Fukuoka.jpg" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-[#FFFAF0] to-transparent"></div>
-            </div>
-            
-            <div class="p-4 space-y-4">
-                <!-- 日期切換器 -->
-                <div class="flex gap-2 overflow-x-auto no-scrollbar pb-2" id="day-selector">
-                    <!-- JS 會動態生成按鈕 -->
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-orange-100 p-4">
+        <h1 class="text-center text-xl font-black text-slate-800 tracking-wider">FUKUOKA 2026</h1>
+        <div class="flex justify-between mt-4 bg-slate-100 p-1 rounded-full text-xs font-bold text-slate-500">
+            <button onclick="switchDay(1)" class="day-btn active-tab px-4 py-2 flex-1">D1</button>
+            <button onclick="switchDay(2)" class="day-btn px-4 py-2 flex-1">D2</button>
+            <button onclick="switchDay(3)" class="day-btn px-4 py-2 flex-1">D3</button>
+            <button onclick="switchDay(4)" class="day-btn px-4 py-2 flex-1">D4</button>
+            <button onclick="switchDay(5)" class="day-btn px-4 py-2 flex-1">D5</button>
+        </div>
+    </header>
+
+    <main class="p-4 max-w-md mx-auto">
+        <div id="day1" class="tab-content active space-y-4">
+            <div class="bg-white p-5 rounded-3xl shadow-sm border border-orange-50">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-xs font-bold">FLIGHT CI128</span>
+                    <span class="text-slate-400 text-xs font-black">16:40 ➔ 18:05</span>
                 </div>
+                <h2 class="text-lg font-black text-slate-800 mb-1">抵達福岡機場</h2>
+                <p class="text-sm text-slate-500 leading-relaxed">搭乘接駁車至地鐵站，轉乘機場線前往天神站。</p>
+            </div>
+            <div onclick="openMap('QUINTESSA福岡天神飯店')" class="bg-white p-5 rounded-3xl shadow-sm border-l-8 border-yellow-400">
+                <h3 class="font-black text-slate-800">QUINTESSA福岡天神飯店</h3>
+                <p class="text-xs text-slate-400 mt-1 italic">Comic & Books 特色飯店，內有豐富漫畫</p>
+                <button class="mt-3 text-xs bg-blue-50 text-blue-600 px-3 py-1 rounded-lg">點擊導航 ➔</button>
+            </div>
+        </div>
 
-                <!-- 天氣資訊 -->
-                <div class="glass p-4 rounded-2xl flex items-center justify-between" id="weather-info">
-                    <div class="flex items-center gap-3">
-                        <span class="text-2xl" id="weather-icon">☀️</span>
-                        <div>
-                            <div class="text-[10px] font-black text-[#5A86C2] uppercase" id="weather-cond">晴時多雲</div>
-                            <div class="text-[10px] font-bold text-slate-400" id="weather-temp">18°C / 12°C</div>
-                        </div>
+        <div id="day2" class="tab-content space-y-4">
+            <div onclick="openMap('食堂 おわん')" class="bg-white p-5 rounded-3xl shadow-sm">
+                <span class="text-xs text-slate-400">09:40 早餐</span>
+                <h3 class="font-black text-slate-800">食堂 おわん</h3>
+                <p class="text-sm text-slate-500 mt-2">博多祇園附近的人氣朝食。</p>
+            </div>
+            <div onclick="openMap('櫛田神社')" class="bg-white p-5 rounded-3xl shadow-sm">
+                <h3 class="font-black text-slate-800">櫛田神社</h3>
+                <p class="text-sm text-slate-500 mt-2">參拜與丟皮克敏！別忘了買明太子美乃滋。</p>
+            </div>
+        </div>
+
+        <div id="day3" class="tab-content space-y-4">
+            <div class="bg-purple-50 p-5 rounded-3xl border border-purple-100">
+                <h3 class="font-black text-purple-800">太宰府一日遊</h3>
+                <p class="text-sm text-purple-600 mt-1">天神站 ➔ 二日市 ➔ 太宰府</p>
+            </div>
+            <div onclick="openMap('寶滿宮竈門神社')" class="bg-white p-5 rounded-3xl shadow-sm">
+                <h3 class="font-black text-slate-800">竈門神社</h3>
+                <p class="text-sm text-slate-500 mt-2">求良緣名所，建築非常優美。</p>
+            </div>
+        </div>
+
+        <div id="day4" class="tab-content space-y-4">
+            <div class="bg-cyan-50 p-5 rounded-3xl border border-cyan-100">
+                <h3 class="font-black text-cyan-800">相島 (貓島)</h3>
+                <p class="text-sm text-cyan-600 mt-1">11:30 開船，記得準時抵達新宮港。</p>
+            </div>
+            <div onclick="openMap('NIKUICHI 藥院')" class="bg-slate-900 p-5 rounded-3xl shadow-xl text-white">
+                <div class="flex justify-between items-start">
+                    <h3 class="font-black text-xl">藥院燒肉 NIKUICHI</h3>
+                    <span class="bg-red-500 text-[10px] px-2 py-1 rounded">MUST EAT</span>
+                </div>
+                <p class="text-sm text-slate-400 mt-2 leading-relaxed">九州產黑毛和牛，福岡必吃燒肉名店！需搭乘七隈線至藥院大通。</p>
+                <button class="mt-4 w-full bg-white text-slate-900 py-2 rounded-xl font-bold text-sm">開始地圖導航</button>
+            </div>
+        </div>
+
+        <div id="day5" class="tab-content space-y-4">
+            <div onclick="openMap('大濠公園')" class="bg-white p-5 rounded-3xl shadow-sm">
+                <h3 class="font-black text-slate-800">大濠公園 & &LOCALS</h3>
+                <p class="text-sm text-slate-500 mt-2">最後巡禮，享受悠閒湖畔時光。</p>
+            </div>
+            <div class="bg-orange-500 p-5 rounded-3xl text-white">
+                <h3 class="font-black text-lg text-center">回程 CI117 (21:00)</h3>
+            </div>
+        </div>
+
+        <div id="budget" class="tab-content space-y-4">
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                <h2 class="font-black text-xl text-slate-800 mb-4">多人分帳計算</h2>
+                <div class="space-y-3">
+                    <input id="expName" type="text" placeholder="品項名稱" class="w-full p-3 bg-slate-50 rounded-xl text-sm border-none focus:ring-2 focus:ring-yellow-400">
+                    <input id="expAmount" type="number" placeholder="金額 (JPY)" class="w-full p-3 bg-slate-50 rounded-xl text-sm border-none focus:ring-2 focus:ring-yellow-400">
+                    <button onclick="addExpense()" class="w-full bg-slate-800 text-white py-3 rounded-xl font-black text-sm">新增紀錄</button>
+                </div>
+                <div id="expList" class="mt-6 space-y-2 max-h-60 overflow-y-auto">
                     </div>
+                <div class="mt-4 pt-4 border-t border-dashed flex justify-between font-black text-slate-800">
+                    <span>總計 (TWD)</span>
+                    <span id="totalTWD">NT$ 0</span>
                 </div>
-
-                <h2 class="text-sm font-black text-slate-800 border-l-4 border-[#ffdda5] pl-3 mb-4" id="day-title">Day 1: 福岡天神首航</h2>
-                
-                <!-- 行程卡片容器 -->
-                <div id="itinerary-list" class="space-y-4">
-                    <!-- JS 會動態生成卡片 -->
-                </div>
-            </div>
-        </section>
-
-        <!-- 2. 記帳頁面 (Budget) -->
-        <section id="page-budget" class="page-content hidden p-6 pt-10">
-            <h2 class="text-xl font-black text-slate-800 mb-6">旅費管理</h2>
-            <div class="bg-white p-10 rounded-[40px] shadow-sm text-center border border-white relative mb-6">
-                <button onclick="toggleDisplayCurrency()" class="bg-[#bbdfff]/40 px-4 py-1.5 rounded-full text-[10px] font-black text-[#5A86C2] mb-4 uppercase tracking-widest flex items-center gap-2 mx-auto">
-                    🔄 切換幣別 (<span id="display-currency-label">TWD</span>)
-                </button>
-                <div class="text-5xl font-black text-[#5A86C2] tracking-tighter" id="total-amount">$ 0</div>
-            </div>
-            <button onclick="openBudgetModal()" class="w-full bg-[#bbdfff] text-slate-700 py-5 rounded-3xl font-black flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all mb-6">
-                ➕ 記一筆支出
-            </button>
-            <div id="expense-list" class="space-y-3">
-                <!-- JS 動態生成 -->
-            </div>
-        </section>
-
-        <!-- 3. 購物清單 (Shopping) -->
-        <section id="page-shopping" class="page-content hidden p-6 pt-10">
-            <h2 class="text-xl font-black text-slate-800 mb-6">購物清單</h2>
-            <div class="bg-white p-6 rounded-3xl border border-white shadow-sm">
-                <div class="flex gap-2 mb-6">
-                    <input type="text" id="shop-input" placeholder="想買的東西..." class="flex-1 bg-slate-50 rounded-xl px-4 py-3 text-sm outline-none">
-                    <button onclick="addShopItem()" class="bg-[#bbdfff] p-3 rounded-xl shadow-sm">➕</button>
-                </div>
-                <div id="shopping-list" class="space-y-3">
-                    <!-- JS 動態生成 -->
-                </div>
-            </div>
-        </section>
-
-        <!-- 4. 資訊頁面 (Info) -->
-        <section id="page-info" class="page-content hidden p-6 pt-10">
-            <h2 class="text-xl font-black text-slate-800 mb-6">實用資訊</h2>
-            <div class="space-y-3">
-                <a href="tel:110" class="bg-white p-4 rounded-2xl flex items-center justify-between shadow-sm border border-white">
-                    <div class="flex items-center gap-4"><span class="text-2xl">👮</span><div><div class="text-sm font-black text-slate-800">警察局 (Police)</div><div class="text-[10px] font-bold text-slate-400">110</div></div></div>
-                    <div class="w-8 h-8 bg-[#bbdfff]/20 rounded-full flex items-center justify-center text-[#5A86C2]">📞</div>
-                </a>
-                <a href="tel:119" class="bg-white p-4 rounded-2xl flex items-center justify-between shadow-sm border border-white">
-                    <div class="flex items-center gap-4"><span class="text-2xl">🚑</span><div><div class="text-sm font-black text-slate-800">救護車/火警</div><div class="text-[10px] font-bold text-slate-400">119</div></div></div>
-                    <div class="w-8 h-8 bg-[#bbdfff]/20 rounded-full flex items-center justify-center text-[#5A86C2]">📞</div>
-                </a>
-            </div>
-        </section>
-
-    </div>
-
-    <!-- 底部導覽列 -->
-    <div class="fixed bottom-6 left-0 right-0 px-6 flex justify-center z-50" id="nav-bar">
-        <nav class="w-full max-w-xs glass rounded-full p-1.5 flex justify-around shadow-xl">
-            <button onclick="switchTab('itinerary')" id="nav-itinerary" class="nav-btn flex-1 flex flex-col items-center py-2.5 rounded-full tab-active">
-                <span class="text-lg">📅</span><span class="text-[9px] font-black mt-1 uppercase">行程</span>
-            </button>
-            <button onclick="switchTab('budget')" id="nav-budget" class="nav-btn flex-1 flex flex-col items-center py-2.5 rounded-full text-slate-400">
-                <span class="text-lg">💰</span><span class="text-[9px] font-black mt-1 uppercase">記帳</span>
-            </button>
-            <button onclick="switchTab('shopping')" id="nav-shopping" class="nav-btn flex-1 flex flex-col items-center py-2.5 rounded-full text-slate-400">
-                <span class="text-lg">🛍️</span><span class="text-[9px] font-black mt-1 uppercase">購物</span>
-            </button>
-            <button onclick="switchTab('info')" id="nav-info" class="nav-btn flex-1 flex flex-col items-center py-2.5 rounded-full text-slate-400">
-                <span class="text-lg">ℹ️</span><span class="text-[9px] font-black mt-1 uppercase">資訊</span>
-            </button>
-        </nav>
-    </div>
-
-    <!-- 詳情彈窗 -->
-    <div id="detail-modal" class="fixed inset-0 z-[100] hidden flex items-end justify-center bg-black/40 backdrop-blur-sm" onclick="closeDetailModal()">
-        <div class="bg-white w-full max-w-md rounded-t-[32px] overflow-hidden animate-slide-up max-h-[85vh] flex flex-col" onclick="event.stopPropagation()">
-            <div class="h-56 w-full flex-shrink-0 relative">
-                <img id="modal-img" src="" class="w-full h-full object-cover">
-                <button onclick="closeDetailModal()" class="absolute top-4 right-4 w-10 h-10 bg-black/20 rounded-full flex items-center justify-center text-white text-xl">✕</button>
-            </div>
-            <div class="p-6 overflow-y-auto no-scrollbar pb-10">
-                <h3 id="modal-title" class="text-xl font-black text-slate-800"></h3>
-                <div id="modal-meta" class="flex items-center gap-3 mt-2 text-[10px] font-bold text-slate-400 uppercase"></div>
-                <div id="modal-content" class="mt-6 space-y-4 text-sm text-slate-500 leading-relaxed"></div>
-                <button onclick="closeDetailModal()" class="w-full mt-8 bg-slate-100 py-4 rounded-2xl font-black text-slate-500">關閉</button>
             </div>
         </div>
-    </div>
+    </main>
 
-    <!-- 記帳彈窗 -->
-    <div id="budget-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-6 bg-black/40 backdrop-blur-sm" onclick="closeBudgetModal()">
-        <div class="bg-white w-full max-w-sm rounded-[32px] p-8 space-y-5 animate-slide-up" onclick="event.stopPropagation()">
-            <h3 class="text-xl font-black text-center text-slate-800">新增支出</h3>
-            <div class="space-y-4">
-                <input type="text" id="exp-item" placeholder="品項" class="w-full bg-slate-50 rounded-2xl px-4 py-4 outline-none text-sm">
-                <input type="number" id="exp-amount" placeholder="金額" class="w-full bg-slate-50 rounded-2xl px-4 py-4 outline-none font-black text-lg">
-                <div class="flex gap-2">
-                    <button onclick="setNewCurrency('JPY')" id="cur-jpy" class="flex-1 py-2 rounded-xl text-[10px] font-black border-2 bg-[#bbdfff] border-[#bbdfff]">JPY</button>
-                    <button onclick="setNewCurrency('TWD')" id="cur-twd" class="flex-1 py-2 rounded-xl text-[10px] font-black border-2 bg-white border-slate-100">TWD</button>
-                </div>
-            </div>
-            <button onclick="saveExpense()" class="w-full py-4 rounded-2xl font-black text-slate-700 bg-[#bbdfff] shadow-md active:scale-95 transition-all">確認新增</button>
+    <nav class="fixed bottom-6 left-0 right-0 px-6 z-50">
+        <div class="max-w-xs mx-auto glass rounded-full p-1.5 flex justify-around shadow-2xl border border-white/50">
+            <button onclick="switchTab('itinerary')" class="p-3"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></button>
+            <button onclick="switchTab('budget')" class="p-3"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></button>
         </div>
-    </div>
+    </nav>
 
     <script>
-        // --- 資料定義 ---
-        const ITINERARY = [
-            {
-                date: "4/17", day: "Day 1: 福岡天神首航", weather: { temp: "18°C / 12°C", cond: "晴時多雲", icon: "☀️" },
-                items: [
-                    { time: "14:40", name: "桃園TPE ➡️ 福岡FUK (CI128)", desc: "搭乘中華航空 CI128 班機。18:05 抵達福岡。", type: 'flight' },
-                    { time: "19:30", name: "飯店 Check-in", desc: "入住 QUINTESSA 福岡天神 Comic & Books。", type: 'hotel', img: "https://q-xx.bstatic.com/xdata/images/hotel/max500/284226582.jpg?k=53722a659e2b23ea3a9dc5e16bacb538d655839122790a0df93484178003d07d&o=" },
-                    { time: "20:30", name: "天神晚餐時光", desc: "天神地區人氣美食推薦。", type: 'dinner', img: "https://resources.matcha-jp.com/resize/720x2000/2024/04/23-177958.webp",
-                      subs: ["元祖博多めんたい重 西中洲", "麵屋兼虎 天神本店"] }
-                ]
-            },
-            {
-                date: "4/18", day: "Day 2: 博多巡禮與購物", weather: { temp: "20°C / 14°C", cond: "晴朗", icon: "☀️" },
-                items: [
-                    { time: "10:30", name: "食堂 おわん (早餐)", desc: "以高湯玉子燒為主，搭配中洲明太子。", img: "https://arne.media/uploads/2025/06/DSC01801-2.jpg" },
-                    { time: "12:00", name: "櫛田神社", desc: "博多最古老的神社之一。", img: "https://resources.matcha-jp.com/resize/720x2000/2024/04/19-177478.webp" },
-                    { time: "14:00", name: "博多運河城", desc: "ALPEN 福岡、拉麵競技場。", img: "https://assets.funliday.com/posts/wp-content/uploads/2024/12/02162019/Snapinsta.app_415939155_879937227472084_2068015520542221285_n_1080-1.jpg" },
-                    { time: "19:45", name: "西新初喜 (壽喜燒)", desc: "福岡老字號精肉店直營。", img: "https://image.kkday.com/v2/image/get/s1.kkday.com/product_179016/20240522144823_G60AM/jpg" }
-                ]
-            },
-            {
-                date: "4/19", day: "Day 3: 太宰府文化之旅", weather: { temp: "16°C / 8°C", cond: "多雲", icon: "☁️" },
-                items: [
-                    { time: "09:30", name: "天神 ➡️ 太宰府 (旅人列車)", desc: "搭乘西鐵太宰府觀光列車「旅人」。", type: 'transport', img: "https://missrosetraveljournal.wordpress.com/wp-content/uploads/2020/07/logo-1-1.jpg" },
-                    { time: "12:00", name: "太宰府天滿宮", desc: "奉祀學問之神菅原道真。", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiO9lUQwWJUmSU_X2ZLk8nlNTTjANq5Wvhtw_rA5PD44liTb7_Gt3QauCuEap96OMURIfv_hhD5UimLrl4vFWx7X3jKXE3PLPlsuLx1qYL6mMTKx-KSBMON0Kup6c3rt2bu4dGpGnFmuuCqbM0wanJSxKlDC-QCsVu7eeK0PHNTr6p82kcvDDrUv601efUW/s1600-rw/%E5%A4%AA%E5%AE%B0%E5%BA%9C%E5%A4%A9%E6%BB%BF%E5%AE%AE.jpg" }
-                ]
-            },
-            {
-                date: "4/20", day: "Day 4: 相島貓島與燒肉", weather: { temp: "17°C / 11°C", cond: "晴時多雲", icon: "⛅" },
-                items: [
-                    { time: "10:00", name: "天神 ➡️ 相島", desc: "前往新宮港搭船。", type: 'transport', img: "https://image.kkday.com/v2/image/get/c_fill%2Cq_55%2Ct_webp%2Cw_960/s1.kkday.com/product_135793/20221115025903_IPoj0/jpg" },
-                    { time: "11:30", name: "相島 (貓島) 探索", desc: "島上生活著約180隻貓咪。", img: "https://www.japaholic.com/storage/files/article_images/MTEyMDI0MDUwNzE4MTkxMjgx.jpg" },
-                    { time: "19:00", name: "藥院燒肉 NIKUICHI", desc: "九州產黑毛和牛。", img: "https://d1grca2t3zpuug.cloudfront.net/2025/09/yakiniku_jyou2025_MAIN-870x500-1756977231.webp" }
-                ]
-            },
-            {
-                date: "4/21", day: "Day 5: 大濠公園與歸途", weather: { temp: "19°C / 13°C", cond: "晴朗", icon: "☀️" },
-                items: [
-                    { time: "12:00", name: "大濠公園 / &LOCALS", desc: "悠閒散步。", img: "https://static.gltjp.com/glt/data/directory/14000/13298/20220724_182904_2ee5f53b_w640.webp" },
-                    { time: "21:00", name: "福岡FUK ➡️ 桃園TPE (CI117)", desc: "搭機回家。", type: 'flight' }
-                ]
-            }
-        ];
-
-        // --- 狀態管理 ---
-        let currentDay = 0;
-        let expenses = JSON.parse(localStorage.getItem('fukuoka_vanilla_exp') || '[]');
-        let shopping = JSON.parse(localStorage.getItem('fukuoka_vanilla_shop') || '[]');
-        let displayCurrency = 'TWD';
-        let newExpCurrency = 'JPY';
-        const RATE = 0.21;
-
-        // --- 初始化 ---
-        window.onload = () => {
-            renderDaySelector();
-            renderItinerary();
-            renderExpenses();
-            renderShopping();
-        };
-
-        // --- 導覽切換 ---
-        function switchTab(tabId) {
-            document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
-            document.getElementById(`page-${tabId}`).classList.remove('hidden');
-            
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('tab-active', 'text-slate-400'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.add('text-slate-400'));
-            document.getElementById(`nav-${tabId}`).classList.add('tab-active');
-            document.getElementById(`nav-${tabId}`).classList.remove('text-slate-400');
-            
+        function switchDay(day) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.day-btn').forEach(el => el.classList.remove('active-tab'));
+            document.getElementById('day' + day).classList.add('active');
+            event.currentTarget.classList.add('active-tab');
             window.scrollTo(0, 0);
         }
 
-        // --- 行程邏輯 ---
-        function renderDaySelector() {
-            const container = document.getElementById('day-selector');
-            container.innerHTML = ITINERARY.map((day, idx) => `
-                <button onclick="changeDay(${idx})" class="flex-shrink-0 w-16 h-16 rounded-2xl flex flex-col items-center justify-center border-2 transition-all ${currentDay === idx ? 'bg-[#bbdfff] border-[#bbdfff] shadow-md' : 'bg-white border-slate-100 text-slate-400'}">
-                    <span class="text-[9px] font-black opacity-50 uppercase">D0${idx + 1}</span>
-                    <span class="text-xs font-black">${day.date}</span>
-                </button>
-            `).join('');
-        }
-
-        function changeDay(idx) {
-            currentDay = idx;
-            renderDaySelector();
-            renderItinerary();
-        }
-
-        function renderItinerary() {
-            const day = ITINERARY[currentDay];
-            document.getElementById('day-title').innerText = day.day;
-            document.getElementById('weather-icon').innerText = day.weather.icon;
-            document.getElementById('weather-cond').innerText = day.weather.cond;
-            document.getElementById('weather-temp').innerText = day.weather.temp;
-
-            const list = document.getElementById('itinerary-list');
-            list.innerHTML = day.items.map((item, idx) => {
-                if (item.type === 'flight' || item.type === 'transport') {
-                    const parts = item.name.split(' ➡️ ');
-                    const color = item.type === 'flight' ? 'from-[#88B0E6] to-[#5A86C2]' : 'from-[#93C5FD] to-[#60A5FA]';
-                    return `
-                        <div class="w-full bg-gradient-to-br ${color} rounded-3xl shadow-lg text-white p-5 flex items-center justify-between border border-white/20">
-                            <div class="flex-1">
-                                <div class="text-[10px] font-black opacity-70 uppercase">${item.type}</div>
-                                <div class="text-xl font-black">${parts[0]}</div>
-                                <div class="text-xs font-bold opacity-70 mt-1">${item.time}</div>
-                            </div>
-                            <div class="px-4 text-xl">${item.type === 'flight' ? '✈️' : '🚌'}</div>
-                            <div class="flex-1 text-right">
-                                <div class="text-[10px] font-black opacity-70 uppercase">Dest</div>
-                                <div class="text-xl font-black">${parts[1] || 'FUK'}</div>
-                            </div>
-                        </div>
-                    `;
-                }
-                return `
-                    <div onclick='openDetail(${JSON.stringify(item).replace(/'/g, "&apos;")})' class="bg-white rounded-[28px] shadow-sm overflow-hidden flex border border-slate-100 active:scale-[0.98] transition-all">
-                        <div class="w-28 h-32 flex-shrink-0">
-                            <img src="${item.img}" class="w-full h-full object-cover">
-                        </div>
-                        <div class="p-4 flex-1 flex flex-col justify-between">
-                            <div>
-                                <h3 class="text-sm font-black text-slate-800 line-clamp-1">${item.name}</h3>
-                                <p class="text-[11px] text-slate-500 line-clamp-2 mt-1">${item.desc}</p>
-                            </div>
-                            <div class="flex items-center justify-between mt-2">
-                                <div class="text-slate-400 text-[10px] font-bold">🕒 ${item.time}</div>
-                                <div class="text-[#D97706]">📍</div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // --- 詳情彈窗 ---
-        function openDetail(item) {
-            document.getElementById('modal-img').src = item.img;
-            document.getElementById('modal-title').innerText = item.name;
-            document.getElementById('modal-meta').innerText = `🕒 ${item.time}`;
-            
-            let content = `<p>${item.desc}</p>`;
-            if (item.subs) {
-                content += `<div class="mt-4 space-y-2">` + item.subs.map(s => `<div class="bg-slate-50 p-3 rounded-xl text-xs font-bold">🍴 ${s}</div>`).join('') + `</div>`;
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            if (tabId === 'itinerary') {
+                document.getElementById('day1').classList.add('active');
+            } else {
+                document.getElementById(tabId).classList.add('active');
             }
-            document.getElementById('modal-content').innerHTML = content;
-            document.getElementById('detail-modal').classList.remove('hidden');
-        }
-        function closeDetailModal() { document.getElementById('detail-modal').classList.add('hidden'); }
-
-        // --- 記帳邏輯 ---
-        function toggleDisplayCurrency() {
-            displayCurrency = displayCurrency === 'TWD' ? 'JPY' : 'TWD';
-            document.getElementById('display-currency-label').innerText = displayCurrency;
-            renderExpenses();
         }
 
-        function openBudgetModal() { document.getElementById('budget-modal').classList.remove('hidden'); }
-        function closeBudgetModal() { document.getElementById('budget-modal').classList.add('hidden'); }
-        
-        function setNewCurrency(c) {
-            newExpCurrency = c;
-            document.getElementById('cur-jpy').className = `flex-1 py-2 rounded-xl text-[10px] font-black border-2 ${c === 'JPY' ? 'bg-[#bbdfff] border-[#bbdfff]' : 'bg-white border-slate-100'}`;
-            document.getElementById('cur-twd').className = `flex-1 py-2 rounded-xl text-[10px] font-black border-2 ${c === 'TWD' ? 'bg-[#bbdfff] border-[#bbdfff]' : 'bg-white border-slate-100'}`;
+        function openMap(name) {
+            window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}`, '_blank');
         }
 
-        function saveExpense() {
-            const item = document.getElementById('exp-item').value;
-            const amount = parseFloat(document.getElementById('exp-amount').value);
-            if (!item || !amount) return;
-
-            const jpy = newExpCurrency === 'TWD' ? amount / RATE : amount;
-            expenses.unshift({ id: Date.now(), item, amount: jpy, date: new Date().toLocaleDateString() });
-            localStorage.setItem('fukuoka_vanilla_exp', JSON.stringify(expenses));
+        let total = 0;
+        const rate = 0.21;
+        function addExpense() {
+            const name = document.getElementById('expName').value;
+            const amount = document.getElementById('expAmount').value;
+            if(!name || !amount) return;
             
-            document.getElementById('exp-item').value = '';
-            document.getElementById('exp-amount').value = '';
-            closeBudgetModal();
-            renderExpenses();
-        }
-
-        function deleteExpense(id) {
-            expenses = expenses.filter(e => e.id !== id);
-            localStorage.setItem('fukuoka_vanilla_exp', JSON.stringify(expenses));
-            renderExpenses();
-        }
-
-        function renderExpenses() {
-            const totalJPY = expenses.reduce((a, b) => a + b.amount, 0);
-            const displayTotal = displayCurrency === 'TWD' ? `$ ${(totalJPY * RATE).toLocaleString(undefined, {maximumFractionDigits:0})}` : `¥ ${totalJPY.toLocaleString()}`;
-            document.getElementById('total-amount').innerText = displayTotal;
-
-            const list = document.getElementById('expense-list');
-            list.innerHTML = expenses.map(exp => `
-                <div class="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm border border-white">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-lg">💵</div>
-                        <div>
-                            <div class="text-sm font-black text-slate-800">${exp.item}</div>
-                            <div class="text-[9px] text-slate-400 font-bold uppercase">${exp.date}</div>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <div class="text-right">
-                            <div class="text-sm font-black text-slate-700">¥${exp.amount.toLocaleString()}</div>
-                        </div>
-                        <button onclick="deleteExpense(${exp.id})" class="text-slate-200 hover:text-red-400">✕</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // --- 購物清單 ---
-        function addShopItem() {
-            const name = document.getElementById('shop-input').value;
-            if (!name) return;
-            shopping.unshift({ id: Date.now(), name, bought: false });
-            localStorage.setItem('fukuoka_vanilla_shop', JSON.stringify(shopping));
-            document.getElementById('shop-input').value = '';
-            renderShopping();
-        }
-
-        function toggleShop(id) {
-            shopping = shopping.map(i => i.id === id ? {...i, bought: !i.bought} : i);
-            localStorage.setItem('fukuoka_vanilla_shop', JSON.stringify(shopping));
-            renderShopping();
-        }
-
-        function deleteShop(id) {
-            shopping = shopping.filter(i => i.id !== id);
-            localStorage.setItem('fukuoka_vanilla_shop', JSON.stringify(shopping));
-            renderShopping();
-        }
-
-        function renderShopping() {
-            const list = document.getElementById('shopping-list');
-            list.innerHTML = shopping.map(item => `
-                <div class="flex items-center justify-between p-4 rounded-2xl border ${item.bought ? 'bg-slate-50 opacity-60' : 'bg-white shadow-sm'}">
-                    <div class="flex items-center gap-3">
-                        <button onclick="toggleShop(${item.id})" class="w-5 h-5 rounded-full border-2 flex items-center justify-center ${item.bought ? 'bg-[#5A86C2] border-[#5A86C2] text-white' : 'border-slate-200'}">
-                            ${item.bought ? '✓' : ''}
-                        </button>
-                        <span class="text-sm font-bold ${item.bought ? 'line-through text-slate-400' : 'text-slate-700'}">${item.name}</span>
-                    </div>
-                    <button onclick="deleteShop(${item.id})" class="text-slate-200 hover:text-red-400">✕</button>
-                </div>
-            `).join('');
-        }
-    </script>
-</body>
-</html>
+            total += parseInt(amount);
+            const list = document.getElementById('expList');
+            const item = document.createElement('div');
+            item.className = "flex justify-between text-sm bg-white p-3 rounded-lg shadow-sm";
+            item.innerHTML = `<span>${name}</span><span class="font-bold text-slate-600">¥${amount}</span>`;
+            list.appendChild(item);
+            
+            document.getElementById('totalTWD').innerText = `NT$ ${Math.round(total * rate)}`;
+            document.getElementById('expName').value = '';
+            document.
